@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: abknet-technologies
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: ABKNET_DB
+        value: data/abknet.db
