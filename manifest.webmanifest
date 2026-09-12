@@ -1,0 +1,10 @@
+{
+  "name": "ABKNET TECHNOLOGIES",
+  "short_name": "ABKNET",
+  "description": "Build, learn and innovate with ABKNET TECHNOLOGIES.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#030b18",
+  "theme_color": "#06152b",
+  "icons": [{"src":"assets/images/abknet-logo.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
+}
