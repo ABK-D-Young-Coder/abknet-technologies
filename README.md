@@ -1,84 +1,165 @@
 # ABKNET TECHNOLOGIES
+# Build • Learn • Innovate
 
-**BUILD • LEARN • INNOVATE**
+A production-ready full-stack platform that keeps the existing GitHub Pages frontend and adds secure backend APIs for auth, contact, tickets, notifications, newsletter, feedback, and admin management.
 
-A production-structured static technology platform built with HTML, CSS and JavaScript.
+## Architecture
 
-## Included
-- Responsive multi-page website
-- Supplied ABKNET logo integrated throughout
-- Functional JSON formatter/validator/download
-- Functional local password generator
-- Functional word counter
-- Functional unit converter
-- Browser QR matrix generator
-- Tools directory
-- Tutorials and project/blog sections
-- Downloads center with honest Coming Soon states
-- YouTube hub
-- About/contact pages
-- Global search across tools, tutorials, projects, blog, downloads and legal pages
-- Light/dark theme preference
-- Tool category filters and tutorial filters
-- Tutorial reading-progress bar and share/copy-link controls
-- Progressive Web App (PWA) install support and offline fallback
-- Accessibility/reduced-motion foundations
-- SEO metadata, robots.txt and sitemap.xml
-- No fake statistics, testimonials or download files
+- Frontend: static HTML/CSS/JS hosted on GitHub Pages
+- Backend: Flask API deployed on Render
+- Database: PostgreSQL in production, SQLite fallback for local development
+- API base URL: https://abknet-technologies.onrender.com
 
-## Run locally
-Open `index.html` in a modern browser, or serve the folder with any static web server.
+## Project structure
 
-## Before production
-1. Keep `abknet.work.gd` in `robots.txt` and `sitemap.xml` unless the domain changes.
-2. Connect the contact form to a secure backend/email provider.
-3. Add the official YouTube channel URL.
-4. Add only real software releases.
-5. Add a real analytics system only if desired and configure its privacy notice.
+- app.py — Flask API and static-site fallback
+- js/api-config.js — frontend API base configuration
+- data/ — SQLite data directory for local development
+- tests/ — API and auth test coverage
+- .env.example — required environment variables
 
-## Backend v2
-The website now includes a Flask + SQLite backend.
+## Local development
 
-### API
-- `GET /api/health` — backend health check
-- `GET /api/search?q=...` — website search API
-- `POST /api/contact` — stores support messages and creates ticket IDs
-- `POST /api/newsletter` — stores newsletter subscriptions
-- `POST /api/feedback` — stores site feedback
-- `GET /admin?token=...` — protected admin inbox
+1. Create and activate a virtual environment
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Windows: .venv\Scripts\activate
+   ```
+2. Install dependencies
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Create a local environment file
+   ```bash
+   cp .env.example .env
+   ```
+4. Update the values in `.env` using your local or Render settings.
+5. Run the app
+   ```bash
+   python app.py
+   ```
+6. Visit http://127.0.0.1:5000
 
-### Run the full website locally
+## Environment variables
+
+See `.env.example` for required variables. The main values are:
+
+- DATABASE_URL
+- SECRET_KEY
+- JWT_SECRET_KEY
+- ADMIN_SECRET
+- EMAIL_PROVIDER
+- SMTP_HOST
+- SMTP_PORT
+- SMTP_USERNAME
+- SMTP_PASSWORD
+- EMAIL_FROM
+- PRIMARY_CONTACT_EMAIL
+- SECONDARY_CONTACT_EMAIL
+- FRONTEND_URL
+
+## PostgreSQL setup
+
+For production, set `DATABASE_URL` to your PostgreSQL connection string. Example:
+
 ```bash
-python -m venv .venv
-# Windows: .venv\\Scripts\\activate
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
+export DATABASE_URL=postgresql://username:password@host:5432/abknet
 ```
-Set `ADMIN_TOKEN` from `.env.example`, then run:
+
+A local SQLite database is used automatically if `DATABASE_URL` is not set.
+
+## Database migrations
+
+The app creates the required tables automatically on startup. For production, keep the schema versioned in your deployment workflow and back up regularly.
+
+## Email configuration
+
+Supported providers:
+
+- SMTP (default)
+- future providers can be added behind the same email abstraction
+
+Set the required SMTP values in `.env` and do not commit real credentials to Git.
+
+## API endpoints
+
+Health:
+- GET /api/health
+
+Authentication:
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/logout
+- POST /api/auth/verify-email
+- POST /api/auth/forgot-password
+- POST /api/auth/reset-password
+
+User:
+- GET /api/users/me
+- PUT /api/users/me
+- PUT /api/users/me/password
+- DELETE /api/users/me
+
+Contact and tickets:
+- POST /api/contact
+- GET /api/contact
+- POST /api/tickets
+- GET /api/tickets
+- GET /api/tickets/<id>
+- POST /api/tickets/<id>/replies
+
+Newsletter and feedback:
+- POST /api/newsletter
+- POST /api/feedback
+
+Admin:
+- GET /api/admin/dashboard
+- GET /api/admin/users
+- GET /api/admin/tickets
+- GET /api/admin/messages
+- GET /api/admin/activity
+
+## Admin setup
+
+Set `ADMIN_SECRET` and `ADMIN_TOKEN` in the environment. Use the `X-Admin-Token` header on admin endpoints. The `/admin` route also checks the header for access.
+
+## GitHub Pages deployment
+
+The static frontend remains deployable on GitHub Pages. The API configuration is set in `js/api-config.js` and uses the Render backend URL.
+
+## Render deployment
+
+1. Push this repo to GitHub.
+2. On Render, create a new Web Service linked to the repo.
+3. Use the `gunicorn app:app` start command.
+4. Provide environment variables from `.env.example`.
+5. Configure `DATABASE_URL` and `ADMIN_TOKEN` in Render.
+6. Deploy and test `/api/health`.
+
+## Running tests
+
 ```bash
-python app.py
+pytest -q
 ```
-Open `http://127.0.0.1:5000`.
 
-The SQLite database is created automatically at `data/abknet.db`.
+## Security checklist
 
-## Feature Update v2
-The site is designed to remain useful on GitHub Pages without requiring a business email. The new client-side features include theme preference, directory filters, tutorial sharing, PWA installation and offline caching.
+- Use HTTPS only in production.
+- Never commit real `.env` files.
+- Use strong secret values.
+- Hash passwords with Werkzeug.
+- Validate all server-side request payloads.
+- Use PostgreSQL in production.
+- Restrict CORS to known frontend domains.
+- Protect admin routes with dedicated authorization.
+- Keep SQLite for local development only.
 
-The Flask backend remains optional for contact, newsletter and feedback storage; the static GitHub Pages deployment does not provide `/api/*` endpoints by itself.
+## Manual follow-up
 
+The following items still need real deployment values from the project owner:
 
-## Feature update v3
-- Added professional Services page and service enquiry links.
-- Added primary and secondary Gmail contact options.
-- Contact form now falls back to a direct email link when the API is unavailable.
-- Added service discovery to global API search.
-- Preserved GitHub Pages, PWA, theme, tools and tutorial features.
-
-Public contact emails:
-- abubakaruuhammadumar2026@gmail.com
-- muhammadabk2090@gmail.com
-
-
-## Backend v4 — production-ready API architecture
-The project now includes a separate-ready Flask backend with PostgreSQL support, SQLite local fallback, CORS for the GitHub Pages domain, protected admin APIs, ticket status updates, and a Render deployment blueprint. The static frontend remains compatible with GitHub Pages. Configure the deployed backend URL in `js/api-config.js`.
+- SMTP credentials or a production email provider account
+- PostgreSQL connection details
+- Render service URL and custom domain
+- Admin secret values
+- Final contact form email delivery provider configuration
